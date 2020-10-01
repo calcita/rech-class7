@@ -1,0 +1,511 @@
+---
+title: "R aplicado a la ECH"
+subtitle: "Setiembre 2020 <br> Gabriela Mathieu"
+#`r icon::fa_r_project(colour = "#43a2ca")`
+# author: "<br> `r icon::fa_creative_commons(colour = "#f0f0f0")` `r icon::fa_creative_commons_by(colour = "#f0f0f0")` `r icon::fa_creative_commons_sa(colour = "#f0f0f0")` <br> Gabriela Mathieu"
+author: <a rel="license" href="http://creativecommons.org/licenses/by/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by/4.0/88x31.png" /></a><br /> <a rel="license" href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>
+output:
+  xaringan::moon_reader:
+    css: xaringan-themer.css
+    #css: [default, default-fonts, rladies-fonts]
+    #lib_dir: libs
+    nature:
+       highlightStyle: github
+       highlightLines: true
+       countIncrementalSlides: false
+       ratio: "16:9"
+       slideNumberFormat: |
+        <div class="progress-bar-container">
+          <div class="progress-bar" style="width: calc(%current% / %total% * 100%);">
+          </div>
+        </div>
+---
+```{r, include = F}
+knitr::opts_chunk$set(fig.width = 6, message = FALSE, warning = FALSE, comment = "", cache = FALSE, fig.retina = 3)
+library(flipbookr)
+library(tidyverse)
+library(flair)
+library(kableExtra)
+options(scipen = 9999)
+```
+```{r xaringan-themer, include=FALSE, warning=FALSE}
+library(xaringanthemer)
+style_duo_accent(
+  #base_color = "#43a2ca",
+  header_font_google = google_font("Mukta"),#Ubuntu Condensed
+  text_font_google   = google_font("Montserrat", "300", "300i"),
+  code_font_google   = google_font("Fira Mono"),
+  primary_color      = "#0F4C81", # pantone classic blue
+  secondary_color    = "#b3e2cd", # pantone baby blue
+  #header_font_google = google_font("Raleway"),
+  #text_font_google   = google_font("Raleway", "300", "300i"),
+  #code_font_google   = google_font("Source Code Pro"),
+  text_font_size     = "25px"
+#   colors = c(
+#   red = "#f34213",
+#   purple = "#3e2f5b",
+#   orange = "#ff8811",
+#   green = "#136f63",
+#   white = "#FFFFFF",
+# )
+)
+
+```
+
+```{r, include=FALSE}
+text_spec2 <- function(x = "x"){
+  text_spec(x, background = "#b3e2cd", bold = T)
+}
+```
+
+```{r echo = FALSE}
+library(dplyr) # cargo el paquete
+load("data/ech19.RData") #importo los datos
+```
+# ¿Qué haremos hoy?
+
+- Repaso del taller anterior
+
+- Introducción al paquete ggplot2
+
+- Introducción al paquete sf y geouy
+
+---
+class: inverse, center, middle
+# ggplot2
+
+---
+# Gramática de gráficos 
+
+.left-column[
+
+![](img/gg.png)
+
+]
+.right-column[
+ - ggplot2 permite hacer los gráficos por `r text_spec2("capas")`, hay diferentes capas pero `r text_spec2("3 fundamentales")` para hacer el gráficos, es decir, elementos que se van agregando.
+
+ -  `r text_spec2("data")`: el data frame que contiene las variables que vamos a graficar
+ 
+ -  `r text_spec2("aesthetics mapping")`: las variables que vamos a graficar y donde (x, y)
+ 
+ -  `r text_spec2("geometrics")`: el tipo de gráfico que haremos (puntos, líneas, barras, etc.)
+ 
+ -  capas adicionales para mejorar el gráfico (título, etiqueta, nombres de ejes, etc.)
+ 
+]
+
+---
+# Capas
+
+
+| Elemento      | Descripción          | Función | 
+|---------------|:-------------:|:------:|
+|Data |Set de datos a plotear | ggplot() |
+|Aesthetics | Escalas en la que mapearemos los datos | aes() |
+|Geometries | Los elementos visuales utilizados para nuestros datos| geom_*() |
+|Facets  | Para ploteos múltiples| facet_*() |
+|Statistics  | Construye nuevas variables (count, density, etc.)| stat_*() |
+|Scales | Que elementos serán mapeados para las variables definidas | scale_*()
+|Coordinate | Cartesianas o polares | coord_*() |
+|Themes  | Estilos gráficos | theme_*()|
+
+
+[R graph gallery](https://www.r-graph-gallery.com/portfolio/ggplot2-package/)
+
+---
+# Capas
+![](img/gg_data_mapping_geoms.png)
+
+- Las 3 primeras capas deben ser en este orden: `data`, `aesthetics`, `geometry`
+--
+
+-  Las capas se van superponiendo con un `+`
+--
+
+- La estructura básica es como esta:
+
+`r text_spec2("ggplot")`(data = `r text_spec2("<df>")`) +
+
+   `r text_spec2("aes")`(x = `r text_spec2("<Variable_1>")`, y = `r text_spec2("<Variable_2>")`) +
+   
+   `r text_spec2("geom_bar")`()  
+
+---
+# Ejemplo
+
+```{r}
+library(ech)
+library(dplyr)
+
+load("data/ech19.RData")
+ech19 <- level_education(data = ech19)
+nivel <- get_estimation_mean(data = ech19, variable = "level_education", level = "i")
+nivel
+```
+
+---
+class: inverse, center, middle
+# ggplot2::ggplot()
+
+---
+# Ejemplo mínimo: data + aes
+
+.pull-left[
+```{r eval = FALSE}
+# Cargo el paquete
+library(ggplot2)
+
+ggplot(data = nivel, aes(x = level_education,
+                         y = estimacion*100)) 
+```
+
+]
+.pull-right[
+```{r echo=FALSE}
+# Cargo el paquete
+library(ggplot2)
+
+ggplot(data = nivel, aes(x = level_education, #<<
+                         y = estimacion*100)) #<<
+```
+- En aes se definen los parámetros estéticos de las variables.
+
+- Aquellos que son fijos como color = "red", fill = "blue", etc. se escriben afuera de aes().
+]
+
+---
+class: inverse, center, middle
+# ggplot2::geom_bar()
+
+---
+# Ejemplo mínimo: data + aes + geom
+
+
+.pull-left[
+```{r eval = FALSE}
+ggplot(data = nivel,
+       aes(x = level_education,
+           y = estimacion*100)) +
+  geom_bar(stat = "identity")  #<<
+```
+
+El argumento de geom_bar(), stat='identity', indica que la altura de la barra debe ser igual al valor y.
+
+]
+.pull-right[
+```{r echo=FALSE}
+ggplot(data = nivel,
+       aes(x = level_education,
+           y = estimacion*100)) +
+  geom_bar(stat="identity")  #<<
+```
+
+]
+
+---
+class: inverse, center, middle
+# ggplot2::coord_flip()
+
+---
+# Ejemplo mínimo: girar ejes
+
+.pull-left[
+```{r eval=FALSE}
+ggplot(data = nivel,
+       aes(x = level_education,
+           y = estimacion*100)) +
+  geom_bar(stat = "identity") +
+  coord_flip() #<<
+```
+]
+.pull-right[
+```{r echo=FALSE}
+ggplot(data = nivel,
+       aes(x = level_education,
+           y = estimacion*100)) +
+  geom_bar(stat = "identity") +
+  coord_flip() #<<
+```
+]
+
+---
+# Etiqueta y relleno
+
+.pull-left[
+```{r eval = FALSE}
+ggplot(data = nivel,
+       aes(x = level_education,
+           y = estimacion*100,
+           fill = level_education, #<<
+           label = paste0(round(estimacion*100,0), "%"))) + #<<
+  geom_bar(stat="identity") +
+  coord_flip() 
+```
+
+]
+.pull-right[
+```{r echo = FALSE}
+ggplot(data = nivel,
+       aes(x = level_education,
+           y = estimacion*100,
+           fill = level_education,
+           label = paste0(round(estimacion*100,0), "%"))) +
+  geom_bar(stat="identity") +
+  coord_flip() #<<
+```
+]
+---
+class: inverse, center, middle
+# ggplot2::geom_text()
+
+---
+# Texto
+
+.pull-left[
+```{r eval = FALSE}
+ggplot(data = nivel,
+       aes(x = level_education,
+           y = estimacion*100,
+           fill = level_education,
+           label = paste0(round(estimacion*100,0), "%"))) +
+  geom_bar(stat="identity") +
+  coord_flip() + 
+  geom_text(size = 3,
+            position = position_stack(vjust = 0.5)) #<<
+```
+
+]
+.pull-right[
+```{r echo = FALSE}
+ggplot(data = nivel,
+       aes(x = level_education,
+           y = estimacion*100,
+           fill = level_education,
+           label = paste0(round(estimacion*100,0), "%"))) +
+  geom_bar(stat="identity") +
+  coord_flip() + 
+  geom_text(size = 3, position = position_stack(vjust = 0.5)) 
+```
+]
+
+---
+class: inverse, center, middle
+# ggplot2::labs()
+
+---
+# Agrego nombre a ejes y título
+
+.pull-left[
+
+```{r eval=FALSE}
+ggplot(data = nivel,
+       aes(x = level_education,
+           y = estimacion*100,
+           fill = level_education,
+           label = paste0(round(estimacion*100,0), "%"))) +
+  geom_bar(stat="identity") +
+  coord_flip() + 
+  geom_text(size = 3, position = position_stack(vjust = 0.5)) +
+  labs(x = "Nive máximo alcanzado", #<<
+     y = "Estimación", #<<
+     title ="Estimación de máximo nivel alcanzado",#<<
+     subtitle = "Fuente: ECH 2019") #<<
+  
+```
+
+
+]
+.pull-right[
+
+```{r echo=FALSE}
+ggplot(data = nivel,
+       aes(x = level_education,
+           y = estimacion*100,
+           fill = level_education,
+           label = paste0(round(estimacion*100,0), "%"))) +
+  geom_bar(stat="identity") +
+  coord_flip() + 
+  geom_text(size = 3, position = position_stack(vjust = 0.5)) +
+  labs(x = "Nive máximo alcanzado", #<<
+     y = "Estimación", #<<
+     title ="Estimación de máximo nivel alcanzado",#<<
+     subtitle = "Fuente: ECH 2019") #<<
+```
+]
+
+---
+class: inverse, center, middle
+# ggplot:theme()
+
+---
+# Elementos del tema
+
+.pull-left[
+
+```{r eval=FALSE}
+ggplot(data = nivel,
+       aes(x = level_education,
+           y = estimacion*100,
+           fill = level_education,
+           label = paste0(round(estimacion*100,0), "%"))) +
+  geom_bar(stat="identity") +
+  coord_flip() + 
+  geom_text(size = 3, position = position_stack(vjust = 0.5)) +
+  labs(x = "Nive máximo alcanzado", 
+     y = "Estimación", 
+     title ="Estimación de máximo nivel alcanzado",
+     subtitle = "Fuente: ECH 2019") +
+  theme(legend.position = "bottom") 
+  
+```
+
+
+]
+.pull-right[
+
+```{r echo=FALSE}
+ggplot(data = nivel,
+       aes(x = level_education,
+           y = estimacion*100,
+           fill = level_education,
+           label = paste0(round(estimacion*100,0), "%"))) +
+  geom_bar(stat="identity") +
+  coord_flip() + 
+  geom_text(size = 3, position = position_stack(vjust = 0.5)) +
+  labs(x = "Nive máximo alcanzado", 
+     y = "Estimación", 
+     title ="Estimación de máximo nivel alcanzado",
+     subtitle = "Fuente: ECH 2019") +
+  theme(legend.position = "bottom") 
+```
+]
+---
+class: inverse, center, middle
+# ggplot::theme_*()
+
+---
+# Temas
+
+- La función theme() controla el estilo del gráfico, permite definir el color de fondo, la apariencia de la leyenda, tamaños de letra, etc.
+
+- En la función theme_*() ya vienen predefinidos una variedad de temas.
+
+- Se pueden instalar un paquete específico que trae más temas: ggthemes.
+
+- Explorar otros [temas](https://ggplot2.tidyverse.org/reference/ggtheme.html).
+
+---
+# Tema predefinido
+
+.pull-left[
+
+```{r eval=FALSE}
+ggplot(data = nivel,
+       aes(x = level_education,
+           y = estimacion*100,
+           fill = level_education,
+           label = paste0(round(estimacion*100,0), "%"))) +
+  geom_bar(stat="identity") +
+  coord_flip() + 
+  geom_text(size = 3, position = position_stack(vjust = 0.5)) +
+  labs(x = "Nive máximo alcanzado", 
+     y = "Estimación", 
+     title ="Estimación de máximo nivel alcanzado",
+     subtitle = "Fuente: ECH 2019") +
+  theme(legend.position = "bottom") +
+  theme_minimal()
+  
+```
+
+
+]
+.pull-right[
+
+```{r echo=FALSE}
+ggplot(data = nivel,
+       aes(x = level_education,
+           y = estimacion*100,
+           fill = level_education,
+           label = paste0(round(estimacion*100,0), "%"))) +
+  geom_bar(stat="identity") +
+  coord_flip() + 
+  geom_text(size = 3, position = position_stack(vjust = 0.5)) +
+  labs(x = "Nive máximo alcanzado", 
+     y = "Estimación", 
+     title ="Estimación de máximo nivel alcanzado",
+     subtitle = "Fuente: ECH 2019") +
+  theme(legend.position = "bottom") +
+  theme_minimal()
+```
+]
+
+---
+class: inverse, center, middle
+# ggplot::scale_fill_manual
+---
+# Escala de colores
+
+.pull-left[
+
+```{r eval=FALSE}
+ggplot(data = nivel,
+       aes(x = level_education,
+           y = estimacion*100,
+           fill = level_education,
+           label = paste0(round(estimacion*100,0), "%"))) +
+  geom_bar(stat="identity") +
+  coord_flip() + 
+  geom_text(size = 3, position = position_stack(vjust = 0.5)) +
+  labs(x = "Nive máximo alcanzado", 
+     y = "Estimación", 
+     title ="Estimación de máximo nivel alcanzado",
+     subtitle = "Fuente: ECH 2019") +
+  theme(legend.position = "bottom") +
+  theme_minimal() +
+  scale_fill_manual(values = c("red", "blue", "green", "yellow", "gray"))
+  
+```
+
+
+]
+.pull-right[
+
+```{r echo=FALSE}
+ggplot(data = nivel,
+       aes(x = level_education,
+           y = estimacion*100,
+           fill = level_education,
+           label = paste0(round(estimacion*100,0), "%"))) +
+  geom_bar(stat="identity") +
+  coord_flip() + 
+  geom_text(size = 3, position = position_stack(vjust = 0.5)) +
+  labs(x = "Nive máximo alcanzado", 
+     y = "Estimación", 
+     title ="Estimación de máximo nivel alcanzado",
+     subtitle = "Fuente: ECH 2019") +
+  theme(legend.position = "bottom") +
+  theme_minimal() +
+  scale_fill_manual(values = c("red", "blue", "green", "yellow", "gray"))
+```
+]
+---
+# Exportar un gráfico
+
+Es preferible el formato pdf ya que se guarda en formato vectorial y así evitamos que se pixele como puede ocurrir con los formatos png, jpg, etc.
+
+```{r eval=FALSE}
+ggsave('<nombre>.pdf')
+```
+
+Podemos definir otros argumentos para variar el tamaño del gráfico, entre otras cosas. Para guardarlo en png cambiamos pdf por png.
+
+---
+# Ejercicio
+
+- Estimar el máximo nivel educativo alcanzado según sexo
+
+- Usando la sintaxis del gráfico anterior hacer un diagrama de barras con la nueva estimación.
+
+- Guardarlo en formato png
+
