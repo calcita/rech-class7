@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="" xml:lang="">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
   <head>
     <title>R aplicado a la ECH</title>
     <meta charset="utf-8" />
@@ -267,7 +267,7 @@ ggplot(data = nivel,
 
 ---
 class: inverse, center, middle
-# ggplot:theme()
+# ggplot::theme()
 
 ---
 # Elementos del tema
@@ -288,7 +288,7 @@ ggplot(data = nivel,
      y = "Estimación", 
      title ="Estimación de máximo nivel alcanzado",
      subtitle = "Fuente: ECH 2019") +
-  theme(legend.position = "bottom") 
+* theme(legend.position = "bottom")
 ```
 
 
@@ -332,7 +332,7 @@ ggplot(data = nivel,
      title ="Estimación de máximo nivel alcanzado",
      subtitle = "Fuente: ECH 2019") +
   theme(legend.position = "bottom") +
-  theme_minimal()
+* theme_minimal()
 ```
 
 
@@ -344,7 +344,7 @@ ggplot(data = nivel,
 
 ---
 class: inverse, center, middle
-# ggplot::scale_fill_manual
+# ggplot::scale_fill_manual()
 ---
 # Escala de colores
 
@@ -366,7 +366,7 @@ ggplot(data = nivel,
      subtitle = "Fuente: ECH 2019") +
   theme(legend.position = "bottom") +
   theme_minimal() +
-  scale_fill_manual(values = c("red", "blue", "green", "yellow", "gray"))
+* scale_fill_manual(values = c("red", "blue", "green", "yellow", "gray"))
 ```
 
 
@@ -382,7 +382,7 @@ Es preferible el formato pdf ya que se guarda en formato vectorial y así evitam
 
 
 ```r
-ggsave('&lt;nombre&gt;.pdf')
+*ggsave('&lt;nombre&gt;.pdf')
 ```
 
 Podemos definir otros argumentos para variar el tamaño del gráfico, entre otras cosas. Para guardarlo en png cambiamos pdf por png.
@@ -444,32 +444,6 @@ if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
     deleted = true;
   });
 })();
-(function() {
-  "use strict"
-  // Replace <script> tags in slides area to make them executable
-  var scripts = document.querySelectorAll(
-    '.remark-slides-area .remark-slide-container script'
-  );
-  if (!scripts.length) return;
-  for (var i = 0; i < scripts.length; i++) {
-    var s = document.createElement('script');
-    var code = document.createTextNode(scripts[i].textContent);
-    s.appendChild(code);
-    var scriptAttrs = scripts[i].attributes;
-    for (var j = 0; j < scriptAttrs.length; j++) {
-      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
-    }
-    scripts[i].parentElement.replaceChild(s, scripts[i]);
-  }
-})();
-(function() {
-  var links = document.getElementsByTagName('a');
-  for (var i = 0; i < links.length; i++) {
-    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
-      links[i].target = '_blank';
-    }
-  }
-})();
 // adds .remark-code-has-line-highlighted class to <pre> parent elements
 // of code chunks containing highlighted lines with class .remark-code-line-highlighted
 (function(d) {
@@ -487,6 +461,17 @@ if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
   }
   preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
 })(document);</script>
+
+<script>
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+</script>
 
 <script>
 slideshow._releaseMath = function(el) {

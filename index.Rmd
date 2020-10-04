@@ -336,7 +336,7 @@ ggplot(data = nivel,
 
 ---
 class: inverse, center, middle
-# ggplot:theme()
+# ggplot::theme()
 
 ---
 # Elementos del tema
@@ -356,7 +356,7 @@ ggplot(data = nivel,
      y = "Estimación", 
      title ="Estimación de máximo nivel alcanzado",
      subtitle = "Fuente: ECH 2019") +
-  theme(legend.position = "bottom") 
+  theme(legend.position = "bottom")  #<<
   
 ```
 
@@ -414,7 +414,7 @@ ggplot(data = nivel,
      title ="Estimación de máximo nivel alcanzado",
      subtitle = "Fuente: ECH 2019") +
   theme(legend.position = "bottom") +
-  theme_minimal()
+  theme_minimal() #<<
   
 ```
 
@@ -442,7 +442,7 @@ ggplot(data = nivel,
 
 ---
 class: inverse, center, middle
-# ggplot::scale_fill_manual
+# ggplot::scale_fill_manual()
 ---
 # Escala de colores
 
@@ -463,7 +463,7 @@ ggplot(data = nivel,
      subtitle = "Fuente: ECH 2019") +
   theme(legend.position = "bottom") +
   theme_minimal() +
-  scale_fill_manual(values = c("red", "blue", "green", "yellow", "gray"))
+  scale_fill_manual(values = c("red", "blue", "green", "yellow", "gray")) #<<
   
 ```
 
@@ -495,7 +495,7 @@ ggplot(data = nivel,
 Es preferible el formato pdf ya que se guarda en formato vectorial y así evitamos que se pixele como puede ocurrir con los formatos png, jpg, etc.
 
 ```{r eval=FALSE}
-ggsave('<nombre>.pdf')
+ggsave('<nombre>.pdf') #<<
 ```
 
 Podemos definir otros argumentos para variar el tamaño del gráfico, entre otras cosas. Para guardarlo en png cambiamos pdf por png.
